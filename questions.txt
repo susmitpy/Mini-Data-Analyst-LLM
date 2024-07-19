@@ -1,0 +1,4 @@
+what is the average age of passengers ?
+how many passengers of class 2 and 3 survived combined ?
+what is the ratio of male to females who survived ?
+average fare ?
