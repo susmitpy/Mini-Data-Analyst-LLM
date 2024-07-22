@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 import pandas as pd
 import ast
 
@@ -8,6 +8,9 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_community.chat_models.ollama import ChatOllama
 import re
 
+from langtrace_python_sdk import with_langtrace_root_span, inject_additional_attributes
+
+
 from models import Node, AgentState
 import prompts
 class Runner:
@@ -15,7 +18,6 @@ class Runner:
     debug_final_state: bool
     take_human_consent: bool
     globals_dict: dict[str, Any]
-    app: CompiledGraph
     llm: ChatOllama
 
     def __init__(self, llm, take_human_consent: bool = False,debug_conversation:bool=False, debug_final_state: bool = False):
@@ -26,7 +28,7 @@ class Runner:
         self.globals_dict = {
             "pd": pd
         }
-        self.create_app()
+        
 
     def is_consent_denied(self, state: AgentState, mssg: str) -> tuple[bool, AgentState]:
         """
@@ -125,26 +127,38 @@ class Runner:
         
         return END
 
-    def create_app(self) -> None:
+    def create_app(self) -> CompiledGraph:
         graph = StateGraph(AgentState)
 
         graph.add_node(Node.AGENT.value, self.call_model)
         graph.add_node(Node.EXECUTE.value, self.execute_code)
 
         graph.add_edge(START, Node.AGENT.value)
-        graph.add_conditional_edges(Node.AGENT.value, self.should_continue)
+        graph.add_conditional_edges(Node.AGENT.value, self.should_continue, {
+            Node.EXECUTE.value: Node.EXECUTE.value,
+            END: END
+        })
         graph.add_edge(Node.EXECUTE.value, Node.AGENT.value)
 
-        self.app = graph.compile()
+        return graph.compile()
 
-    def run(self, data_dict: dict[str, pd.DataFrame], question: str)->str:
+    @with_langtrace_root_span()
+    def create_and_invoke(self, state: AgentState) -> dict:
+        app = self.create_app()
+        final_state_response: dict = app.invoke(state)
+        return final_state_response
+
+    def run(self, data_dict: dict[str, pd.DataFrame], question: str, session_id: str)->str:
+        print(session_id)
         self.globals_dict['data_dict'] = data_dict
         sample_data = {name: df.head().to_dict() for name, df in data_dict.items()}
         initial_message = SystemMessage(content=prompts.INITIAL.format(sample_data=sample_data))
         question_message = HumanMessage(content=prompts.QUESTION.format(question=question))
-        final_state = AgentState(**self.app.invoke(
+
+        final_state_response: dict = inject_additional_attributes(lambda: self.create_and_invoke(
             AgentState(messages=[initial_message, question_message], prev_results={}, human_stop=False, show_last_two_messages=False)
-        ))
+        ), {"user_id": session_id, "question": question})
+        final_state = AgentState(**final_state_response)
         final_return = self.get_final_and_print_results(final_state)
         return final_return
 
