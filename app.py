@@ -1,8 +1,17 @@
+import configparser
+
+config = configparser.ConfigParser()
+config.read("env.ini")
+
+from langtrace_python_sdk import langtrace
+langtrace.init(api_key = config["DEFAULT"]["LANGTRACE_API_KEY"])
+
 from utils import load_data
 from langchain_community.chat_models.ollama import ChatOllama
 import boto3
 from langchain_aws import ChatBedrock
 from runner import Runner
+from uuid import uuid4
 
 LOCAL = True
 
@@ -23,5 +32,6 @@ while True:
     question = input("Enter your question: (q to quit) ")
     if question == "q":
         break
-    ans = runner.run(data_dict, question)
+    session_id = str(uuid4())
+    ans = runner.run(data_dict, question, session_id)
     print("\n\n")
