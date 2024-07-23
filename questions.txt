@@ -1,3 +1,4 @@
 what is the average age of passengers ?
 how many passengers of class 2 and 3 survived combined ?
 average fare ?
+Combining the data of train and test, find out the number of groups of passengers (having same ticket id) having more than 3 members

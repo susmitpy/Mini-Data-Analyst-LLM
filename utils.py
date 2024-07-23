@@ -34,5 +34,15 @@ def get_executable_code_from_message(mssg: str) -> str:
 
     code = re.search(r"EXECUTE\s*```(?:python)?\s*(.*?)\s*```", mssg, re.DOTALL)
     if code:
-        return code.group(1)
+        return clean_executable_code(code.group(1))
     raise Exception("No code found in message")
+
+def clean_executable_code(code: str) -> str:
+    """
+    Removes the import statements of pandas and numpy from the code
+    if they are present
+    """
+
+    code = re.sub(r"import\s+pandas\s+as\s+pd", "", code)
+    code = re.sub(r"import\s+numpy\s+as\s+np", "", code)
+    return code

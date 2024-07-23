@@ -16,15 +16,17 @@ from uuid import uuid4
 LOCAL = True
 
 file_paths = {
-    "titanic": "data/titanic.csv",
+    "titanic_train": "data/titanic_train.csv",
+    "titanic_test": "data/titanic_test.csv",
 }
 data_dict = load_data(file_paths)
 
+TEMPERATURE = 0.1
 if LOCAL:
-    llm = ChatOllama(model="llama3", temperature=0)
+    llm = ChatOllama(model="llama3", temperature=TEMPERATURE)
 else:
     bedrock_rt = boto3.client(service_name="bedrock-runtime", region_name="ap-south-1")
-    llm = ChatBedrock(model_id="meta.llama3-70b-instruct-v1:0",model_kwargs=dict(temperature=0))
+    llm = ChatBedrock(model_id="meta.llama3-70b-instruct-v1:0",model_kwargs=dict(temperature=TEMPERATURE))
 
 runner = Runner(llm=llm, take_human_consent=False, debug_conversation=False, debug_final_state=False)
 
