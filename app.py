@@ -21,10 +21,10 @@ file_paths = {
 data_dict = load_data(file_paths)
 
 if LOCAL:
-    llm = ChatOllama(model="llama3")
+    llm = ChatOllama(model="llama3", temperature=0)
 else:
     bedrock_rt = boto3.client(service_name="bedrock-runtime", region_name="ap-south-1")
-    llm = ChatBedrock(model_id="meta.llama3-70b-instruct-v1:0")
+    llm = ChatBedrock(model_id="meta.llama3-70b-instruct-v1:0",model_kwargs=dict(temperature=0))
 
 runner = Runner(llm=llm, take_human_consent=False, debug_conversation=False, debug_final_state=False)
 
