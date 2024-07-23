@@ -1,7 +1,8 @@
 from typing import Any, Optional
 import pandas as pd
+import numpy as np
 import ast
-
+import datetime
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.graph import CompiledGraph
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
@@ -27,7 +28,9 @@ class Runner:
         self.take_human_consent = take_human_consent
         self.debug_final_state = debug_final_state
         self.globals_dict = {
-            "pd": pd
+            "pd": pd,
+            "np": np,
+            "datetime": datetime
         }
         
 
@@ -145,7 +148,7 @@ class Runner:
     def run(self, data_dict: dict[str, pd.DataFrame], question: str, session_id: str)->str:
         print(session_id)
         self.globals_dict['data_dict'] = data_dict
-        sample_data = {name: df.head().to_dict() for name, df in data_dict.items()}
+        sample_data = {name: df.head() for name, df in data_dict.items()}
         initial_message = SystemMessage(content=prompts.INITIAL.format(sample_data=sample_data))
         question_message = HumanMessage(content=prompts.QUESTION.format(question=question))
 
@@ -176,7 +179,7 @@ class Runner:
         if last_message.content.startswith("END"):
             content = last_message.content[3:].strip()
             print("Final Answer: ", content)
-            return content
+            return content.strip()
 
         if final_state.human_stop:
             print("User has stopped the conversation.")
