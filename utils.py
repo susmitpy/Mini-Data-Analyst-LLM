@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 
 def load_data(files: dict[str, str]) -> dict[str, pd.DataFrame]:
@@ -10,3 +11,28 @@ def load_data(files: dict[str, str]) -> dict[str, pd.DataFrame]:
         except Exception as e:
             print(f"Error loading {file_path}: {e}")
     return data_dict
+
+def get_executable_code_from_message(mssg: str) -> str:
+    """
+    EXECUTE
+    ```
+    {code}
+    ```
+    text
+
+    OR
+
+    EXECUTE
+    ```python
+    {code}
+    ```
+    text
+
+    returns {code}
+
+    """
+
+    code = re.search(r"EXECUTE\s*```(?:python)?\s*(.*?)\s*```", mssg, re.DOTALL)
+    if code:
+        return code.group(1)
+    raise Exception("No code found in message")

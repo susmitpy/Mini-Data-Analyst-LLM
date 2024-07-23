@@ -9,6 +9,7 @@ from langchain_community.chat_models.ollama import ChatOllama
 import re
 
 from langtrace_python_sdk import with_langtrace_root_span, inject_additional_attributes
+from utils import get_executable_code_from_message
 
 
 from models import Node, AgentState
@@ -46,17 +47,10 @@ class Runner:
         return False, state
 
     def execute_code(self, state: AgentState) -> AgentState:
-        """
-        EXECUTE
-        ```
-        {code}
-        ```
-        text
-        """
         message: str = state.messages[-1].content
         try:
-            code = re.search(r"EXECUTE\n```(.*)```", message, re.DOTALL).group(1)
-        except AttributeError:
+            code = get_executable_code_from_message(message)
+        except Exception:
             state.messages = state.messages + [HumanMessage(content=prompts.NO_CODE_FOUND)]
             return state
 
