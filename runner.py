@@ -179,7 +179,7 @@ class Runner:
         if last_message.content.startswith("END"):
             content = last_message.content[3:].strip()
             print("Final Answer: ", content)
-            return content
+            return content.strip()
 
         if final_state.human_stop:
             print("User has stopped the conversation.")
