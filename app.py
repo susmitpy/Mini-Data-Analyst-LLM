@@ -13,7 +13,7 @@ from langchain_aws import ChatBedrock
 from runner import Runner
 from uuid import uuid4
 
-LOCAL = True
+LOCAL = False
 
 file_paths = {
     "titanic_train": "data/titanic_train.csv",
@@ -21,12 +21,12 @@ file_paths = {
 }
 data_dict = load_data(file_paths)
 
-TEMPERATURE = 0.1
+
 if LOCAL:
-    llm = ChatOllama(model="llama3", temperature=TEMPERATURE)
+    llm = ChatOllama(model="llama3")
 else:
     bedrock_rt = boto3.client(service_name="bedrock-runtime", region_name="ap-south-1")
-    llm = ChatBedrock(model_id="meta.llama3-70b-instruct-v1:0",model_kwargs=dict(temperature=TEMPERATURE))
+    llm = ChatBedrock(model_id="meta.llama3-70b-instruct-v1:0")
 
 runner = Runner(llm=llm, take_human_consent=False, debug_conversation=False, debug_final_state=False)
 

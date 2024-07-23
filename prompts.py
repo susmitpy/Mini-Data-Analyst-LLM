@@ -8,7 +8,7 @@ Be sure to store the output in a variable named 'result'. Don't write anything e
 
 Based on the output in the 'result' variable, you can either:
 1. Ask for more data by instructing EXECUTE again, or
-2. Formulate an answer if you have sufficient information by typing 'END' followed by your final answer.
+2. Formulate an answer if you have sufficient information by typing 'END' followed by your final answer based on the result.
 
 Example:
 Message 1:
@@ -22,7 +22,8 @@ END The sum of the column is.
 
 Your code should not contain any imports. The environment already contains data_dict, pd, np and datetime.
 data_dict values are pandas dataframes.
-Note that in a single message both EXECUTE and END cannot be present. The final answer should be concise and to the point. 
+Note that in a single message both EXECUTE and END cannot be present. The answer should be concise and to the point.
+Make sure the answer is based on the code execution result.
 
 Here's a sample of the data you're working with:
 {sample_data}
