@@ -13,7 +13,7 @@ from langchain_aws import ChatBedrock
 from runner import Runner
 from uuid import uuid4
 
-LOCAL = False
+LOCAL = True
 
 file_paths = {
     "titanic_train": "data/titanic_train.csv",
