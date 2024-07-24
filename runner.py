@@ -86,7 +86,7 @@ class Runner:
             state.prev_results[code] = result
             # Add result to globals dict for next execution
             self.globals_dict['result'] = state.prev_results[code] # if it's a dataframe, it will be passed as a reference thus saving memory
-            state.messages = state.messages + [AIMessage(content=prompts.EXECUTION_COMPLETE.format(result=result)), HumanMessage(content="Give final answer END {answer} or execute more code")]
+            state.messages = state.messages + [AIMessage(content=prompts.EXECUTION_COMPLETE.format(result=result)), HumanMessage(content=prompts.ANSWER_OR_CODE)]
             state.show_last_two_messages = True # So that the user can see the result of the code execution
             return state
         except Exception as e:

@@ -34,5 +34,6 @@ CODE_ALREADY_EXECUTED_WITH_RESULT = "You have already asked to execute this code
 IMPORTS_NOT_ALLOWED = "Import statements are not allowed. Refactor your code."
 NO_RESULT_FOUND = "No result found. Please check the code."
 EXECUTION_COMPLETE = "Execution complete. Output result: {result}"
+ANSWER_OR_CODE = "Give final answer END {answer} or execute more code"
 ERROR_EXECUTING_CODE = "Error executing code: {e}"
 BOTH_EXECUTE_END = "Both EXECUTE and END cannot be present in a single message. Please refactor your message."
